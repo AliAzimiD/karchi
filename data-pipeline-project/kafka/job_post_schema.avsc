@@ -1,0 +1,156 @@
+{
+  "type"
+: "record"
+,
+  "name"
+: "JobPost"
+,
+  "fields"
+: [
+    {
+"name"
+: "id"
+, "type"
+: "int"
+}
+,
+    {
+"name"
+: "title"
+, "type"
+: "string"
+}
+,
+    {
+"name"
+: "company_titleFa"
+, "type"
+: "string"
+}
+,
+    {
+"name"
+: "company_titleEn"
+, "type"
+: [
+"null"
+, "string"
+]
+, "default"
+:
+null
+
+}
+,
+    {
+"name"
+: "province_titleFa"
+, "type"
+: "string"
+}
+,
+    {
+"name"
+: "province_titleEn"
+, "type"
+: "string"
+}
+,
+    {
+"name"
+: "city_titleFa"
+, "type"
+: "string"
+}
+,
+    {
+"name"
+: "city_titleEn"
+, "type"
+: "string"
+}
+,
+    {
+"name"
+: "country_titleFa"
+, "type"
+: "string"
+}
+,
+    {
+"name"
+: "country_titleEn"
+, "type"
+: "string"
+}
+,
+    {
+"name"
+: "workType_titleFa"
+, "type"
+: "string"
+}
+,
+    {
+"name"
+: "workType_titleEn"
+, "type"
+: "string"
+}
+,
+    {
+"name"
+: "salary"
+, "type"
+: [
+"null"
+, "string"
+]
+, "default"
+:
+null
+
+}
+,
+    {
+"name"
+: "gender"
+, "type"
+: "string"
+}
+,
+    {
+"name"
+: "tags"
+, "type"
+: {
+"type"
+: "array"
+, "items"
+: "string"
+}
+}
+,
+    {
+"name"
+: "jobBoard_titleFa"
+, "type"
+: "string"
+}
+,
+    {
+"name"
+: "jobBoard_titleEn"
+, "type"
+: "string"
+}
+,
+    {
+"name"
+: "activationTime"
+, "type"
+: "string"
+}
+  ]
+}
+

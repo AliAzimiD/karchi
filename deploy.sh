@@ -34,9 +34,11 @@ else
     echo "Docker Compose is already installed"
 fi
 
-# Clone the repository
-echo "Cloning the repository..."
-git clone $REPO_URL
+# Clone the repository if it doesn't exist
+if [ ! -d "$PROJECT_DIR" ]; then
+    echo "Cloning the repository..."
+    git clone $REPO_URL
+fi
 
 # Change to the project directory
 cd $PROJECT_DIR || exit
@@ -54,8 +56,12 @@ kubectl apply -f kubernetes/pvc.yaml
 kubectl apply -f kubernetes/airflow-deployment.yaml
 
 # Set up Superset using Docker Compose
-echo "Setting up Superset using Docker Compose..."
-cd superset || exit
-docker-compose up -d
+if [ -d "superset" ]; then
+    echo "Setting up Superset using Docker Compose..."
+    cd superset || exit
+    docker-compose up -d
+else
+    echo "Superset directory not found. Skipping Superset setup."
+fi
 
 echo "Deployment complete. All services are up and running."

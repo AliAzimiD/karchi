@@ -2,7 +2,7 @@
 
 # Set variables
 REPO_URL="https://github.com/AliAzimiD/karchi.git"
-PROJECT_DIR="karchi/data-pipeline-project"
+PROJECT_DIR="root/karchi/data-pipeline-project"
 MOUNT_DIR="/mnt/$PROJECT_DIR"
 SUPSERSET_DIR="superset"
 KUBERNETES_DIR="$PROJECT_DIR/kubernetes"
@@ -60,7 +60,9 @@ create_airflow_dirs() {
 apply_k8s_configs() {
     log "Applying Kubernetes configurations..."
     if command_exists kubectl; then
-        cd $KUBERNETES_DIR || { log "Kubernetes directory not found"; exit 1; }
+        log "Listing contents of the cloned repository:"
+        ls -R $PROJECT_DIR
+        cd $KUBERNETES_DIR || { log "Kubernetes directory not found: $KUBERNETES_DIR"; exit 1; }
         kubectl apply -f pv.yaml || { log "Failed to apply pv.yaml"; exit 1; }
         kubectl apply -f pvc.yaml || { log "Failed to apply pvc.yaml"; exit 1; }
         kubectl apply -f airflow-deployment.yaml || { log "Failed to apply airflow-deployment.yaml"; exit 1; }

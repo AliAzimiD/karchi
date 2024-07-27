@@ -16,8 +16,8 @@ log() {
 install_kubectl() {
     log "Installing kubectl..."
     apt-get update && apt-get install -y apt-transport-https ca-certificates curl
-    sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
     apt-get update && apt-get install -y kubectl || { log "Failed to install kubectl"; exit 1; }
 }
 
@@ -36,8 +36,15 @@ command_exists() {
 # Function to clone the repository
 clone_repo() {
     if [ -d "$PROJECT_DIR" ]; then
-        log "Directory $PROJECT_DIR already exists. Pulling the latest changes..."
-        cd $PROJECT_DIR && git pull || { log "Failed to pull updates from repository"; exit 1; }
+        read -p "Directory $PROJECT_DIR already exists. Do you want to delete it and re-clone the repository? (y/n): " choice
+        if [ "$choice" = "y" ]; then
+            log "Deleting existing directory $PROJECT_DIR..."
+            rm -rf $PROJECT_DIR
+            log "Cloning the repository..."
+            git clone $REPO_URL
+        else
+            log "Using existing directory $PROJECT_DIR."
+        fi
     else
         log "Cloning the repository..."
         git clone $REPO_URL || { log "Failed to clone repository"; exit 1; }

@@ -60,9 +60,9 @@ create_airflow_dirs() {
 apply_k8s_configs() {
     log "Applying Kubernetes configurations..."
     if command_exists kubectl; then
-        kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/pv.yaml
-        kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/pvc.yaml
-        kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/airflow-deployment.yaml || { log "Failed to apply Kubernetes configurations"; exit 1; }
+        kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/pv.yaml || { log "Failed to apply pv.yaml"; exit 1; }
+        kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/pvc.yaml || { log "Failed to apply pvc.yaml"; exit 1; }
+        kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/airflow-deployment.yaml || { log "Failed to apply airflow-deployment.yaml"; exit 1; }
     else
         log "kubectl is not installed. Skipping Kubernetes configurations."
     fi

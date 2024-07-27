@@ -15,10 +15,7 @@ log() {
 # Function to install kubectl
 install_kubectl() {
     log "Installing kubectl..."
-    apt-get update && apt-get install -y apt-transport-https ca-certificates curl
-    curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
-    apt-get update && apt-get install -y kubectl || { log "Failed to install kubectl"; exit 1; }
+    sudo snap install kubectl --classic || { log "Failed to install kubectl"; exit 1; }
 }
 
 # Function to install Docker Compose

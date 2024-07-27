@@ -17,7 +17,7 @@ install_kubectl() {
     log "Installing kubectl..."
     apt-get update && apt-get install -y apt-transport-https ca-certificates curl
     curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-    echo "deb https://apt.kubernetes.io/ kubernetes-jammy main" | tee /etc/apt/sources.list.d/kubernetes.list
+    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
     apt-get update && apt-get install -y kubectl
 }
 
@@ -62,9 +62,13 @@ create_airflow_dirs() {
 # Function to apply Kubernetes configurations
 apply_k8s_configs() {
     log "Applying Kubernetes configurations..."
-    kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/pv.yaml
-    kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/pvc.yaml
-    kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/airflow-deployment.yaml
+    if command_exists kubectl; then
+        kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/pv.yaml
+        kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/pvc.yaml
+        kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/airflow-deployment.yaml
+    else
+        log "kubectl is not installed. Skipping Kubernetes configurations."
+    fi
 }
 
 # Function to set up Superset using Docker Compose

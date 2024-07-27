@@ -2,10 +2,10 @@
 
 # Set variables
 REPO_URL="https://github.com/AliAzimiD/karchi.git"
-PROJECT_DIR="karchi"
+PROJECT_DIR="karchi/data-pipeline-project"
 MOUNT_DIR="/mnt/$PROJECT_DIR"
 SUPSERSET_DIR="superset"
-KUBERNETES_DIR="kubernetes"
+KUBERNETES_DIR="$PROJECT_DIR/kubernetes"
 
 # Function to log messages
 log() {
@@ -60,9 +60,9 @@ create_airflow_dirs() {
 apply_k8s_configs() {
     log "Applying Kubernetes configurations..."
     if command_exists kubectl; then
-        kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/pv.yaml || { log "Failed to apply pv.yaml"; exit 1; }
-        kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/pvc.yaml || { log "Failed to apply pvc.yaml"; exit 1; }
-        kubectl apply -f $PROJECT_DIR/$KUBERNETES_DIR/airflow-deployment.yaml || { log "Failed to apply airflow-deployment.yaml"; exit 1; }
+        kubectl apply -f $KUBERNETES_DIR/pv.yaml || { log "Failed to apply pv.yaml"; exit 1; }
+        kubectl apply -f $KUBERNETES_DIR/pvc.yaml || { log "Failed to apply pvc.yaml"; exit 1; }
+        kubectl apply -f $KUBERNETES_DIR/airflow-deployment.yaml || { log "Failed to apply airflow-deployment.yaml"; exit 1; }
     else
         log "kubectl is not installed. Skipping Kubernetes configurations."
     fi

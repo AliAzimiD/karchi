@@ -59,12 +59,20 @@ create_airflow_dirs() {
 apply_k8s_configs() {
     log "Applying Kubernetes configurations..."
     if command_exists kubectl; then
-        log "Listing contents of the cloned repository:"
+        log "Listing contents of the cloned repository before applying Kubernetes configurations:"
         ls -R $PROJECT_DIR
-        cd $KUBERNETES_DIR || { log "Kubernetes directory not found: $KUBERNETES_DIR"; exit 1; }
-        kubectl apply -f pv.yaml || { log "Failed to apply pv.yaml"; exit 1; }
-        kubectl apply -f pvc.yaml || { log "Failed to apply pvc.yaml"; exit 1; }
-        kubectl apply -f airflow-deployment.yaml || { log "Failed to apply airflow-deployment.yaml"; exit 1; }
+        if [ -d "$KUBERNETES_DIR" ]; then
+            log "Kubernetes directory found. Applying configurations."
+            cd $KUBERNETES_DIR || { log "Kubernetes directory not found: $KUBERNETES_DIR"; exit 1; }
+            kubectl apply -f pv.yaml || { log "Failed to apply pv.yaml"; exit 1; }
+            kubectl apply -f pvc.yaml || { log "Failed to apply pvc.yaml"; exit 1; }
+            kubectl apply -f airflow-deployment.yaml || { log "Failed to apply airflow-deployment.yaml"; exit 1; }
+        else
+            log "Kubernetes directory not found after cloning: $KUBERNETES_DIR"
+            log "Checking the contents of the project directory for debugging:"
+            ls -la $PROJECT_DIR
+            exit 1
+        fi
     else
         log "kubectl is not installed. Skipping Kubernetes configurations."
     fi

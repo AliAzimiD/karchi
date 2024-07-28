@@ -2,8 +2,7 @@
 
 # Set variables
 REPO_URL="https://github.com/AliAzimiD/karchi.git"
-PROJECT_DIR="root/karchi/data-pipeline-project"
-MOUNT_DIR="/mnt/$PROJECT_DIR"
+PROJECT_DIR="karchi/data-pipeline-project"
 SUPSERSET_DIR="superset"
 KUBERNETES_DIR="$PROJECT_DIR/kubernetes"
 
@@ -51,9 +50,9 @@ clone_repo() {
 # Function to create necessary directories for Airflow
 create_airflow_dirs() {
     log "Creating necessary directories for Airflow..."
-    mkdir -p $MOUNT_DIR/airflow/dags
-    mkdir -p $MOUNT_DIR/airflow/logs
-    mkdir -p $MOUNT_DIR/airflow/plugins || { log "Failed to create directories for Airflow"; exit 1; }
+    mkdir -p $PROJECT_DIR/airflow/dags
+    mkdir -p $PROJECT_DIR/airflow/logs
+    mkdir -p $PROJECT_DIR/airflow/plugins || { log "Failed to create directories for Airflow"; exit 1; }
 }
 
 # Function to apply Kubernetes configurations

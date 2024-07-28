@@ -2,7 +2,7 @@
 
 # Set variables
 REPO_URL="https://github.com/AliAzimiD/karchi.git"
-PROJECT_DIR="karchi/data-pipeline-project"
+PROJECT_DIR="data-pipeline-project"
 SUPSERSET_DIR="superset"
 KUBERNETES_DIR="$PROJECT_DIR/kubernetes"
 
@@ -46,11 +46,11 @@ clone_repo() {
         git clone $REPO_URL || { log "Failed to clone repository"; exit 1; }
     fi
 
-    # Initialize and update submodules if any
-    cd karchi || exit 1
+    # Move into the project directory
+    cd karchi/$PROJECT_DIR || exit 1
     git submodule init
     git submodule update
-    cd ..
+    cd ../..
 }
 
 # Function to create necessary directories for Airflow

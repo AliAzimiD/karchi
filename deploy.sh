@@ -47,7 +47,7 @@ clone_repo() {
     fi
 
     # Initialize and update submodules if any
-    cd karchi
+    cd karchi || exit 1
     git submodule init
     git submodule update
     cd ..

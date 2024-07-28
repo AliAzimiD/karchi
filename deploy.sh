@@ -45,6 +45,12 @@ clone_repo() {
         log "Cloning the repository..."
         git clone $REPO_URL || { log "Failed to clone repository"; exit 1; }
     fi
+
+    # Initialize and update submodules if any
+    cd karchi
+    git submodule init
+    git submodule update
+    cd ..
 }
 
 # Function to create necessary directories for Airflow

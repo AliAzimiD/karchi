@@ -4,7 +4,7 @@
 REPO_URL="https://github.com/AliAzimiD/karchi.git"
 PROJECT_DIR="data-pipeline-project"
 SUPSERSET_DIR="superset"
-KUBERNETES_DIR="$PROJECT_DIR/kubernetes"
+KUBERNETES_DIR="karchi/data-pipeline-project/kubernetes"
 
 # Function to log messages
 log() {
@@ -170,7 +170,7 @@ main() {
     fi
 
     # Change to the project directory
-    cd $PROJECT_DIR || exit
+    cd karchi/$PROJECT_DIR || exit
 
     # Create necessary directories for Airflow
     create_airflow_dirs

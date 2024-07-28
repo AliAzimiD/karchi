@@ -158,6 +158,17 @@ main() {
     # Clone the repository
     clone_repo
 
+    # Verify the presence of the kubernetes directory
+    log "Checking if the Kubernetes directory exists after cloning..."
+    if [ -d "$KUBERNETES_DIR" ]; then
+        log "Kubernetes directory found: $KUBERNETES_DIR"
+    else
+        log "Kubernetes directory not found: $KUBERNETES_DIR"
+        log "Contents of the project directory:"
+        ls -R $PROJECT_DIR
+        exit 1
+    fi
+
     # Change to the project directory
     cd $PROJECT_DIR || exit
 

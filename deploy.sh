@@ -4,7 +4,7 @@
 REPO_URL="https://github.com/AliAzimiD/karchi.git"
 PROJECT_DIR="data-pipeline-project"
 SUPSERSET_DIR="superset"
-KUBERNETES_DIR="karchi/data-pipeline-project/kubernetes"
+KUBERNETES_DIR="karchi/data-pipeline-project"
 
 # Function to log messages
 log() {

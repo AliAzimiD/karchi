@@ -1,7 +1,7 @@
 #!/bin/bash
 # Set variables
 REPO_URL="https://github.com/AliAzimiD/karchi.git"
-PROJECT_DIR="karchi/data-pipeline-project"
+PROJECT_DIR="data-pipeline-project"
 KUBERNETES_DIR="$PROJECT_DIR/kubernetes"
 SUPSERSET_DIR="$PROJECT_DIR/superset"
 
@@ -71,6 +71,8 @@ apply_k8s_configs() {
             cd $KUBERNETES_DIR || { log "Kubernetes directory not found: $KUBERNETES_DIR"; exit 1; }
             kubectl apply -f pv.yaml || { log "Failed to apply pv.yaml"; exit 1; }
             kubectl apply -f pvc.yaml || { log "Failed to apply pvc.yaml"; exit 1; }
+            kubectl apply -f kafka-zookeeper-deployment.yaml || { log "Failed to apply kafka-zookeeper-deployment.yaml"; exit 1; }
+            kubectl apply -f spark-deployment.yaml || { log "Failed to apply spark-deployment.yaml"; exit 1; }
             kubectl apply -f airflow-deployment.yaml || { log "Failed to apply airflow-deployment.yaml"; exit 1; }
         else
             log "Kubernetes directory not found after cloning: $KUBERNETES_DIR"
@@ -86,8 +88,8 @@ apply_k8s_configs() {
 # Function to set up Superset using Docker Compose
 setup_superset() {
     log "Setting up Superset using Docker Compose..."
-    mkdir -p $SUPSERSET_DIR
-    cat <<EOF > $SUPSERSET_DIR/docker-compose.yml
+    mkdir -p $PROJECT_DIR/$SUPSERSET_DIR
+    cat <<EOF > $PROJECT_DIR/$SUPSERSET_DIR/docker-compose.yml
 version: "3.8"
 services:
   superset:
@@ -134,7 +136,7 @@ services:
       - "6379:6379"
     restart: always
 EOF
-    cd $SUPSERSET_DIR
+    cd $PROJECT_DIR/$SUPSERSET_DIR
     docker-compose up -d || { log "Failed to set up Superset"; exit 1; }
 }
 
@@ -156,20 +158,6 @@ main() {
 
     # Clone the repository
     clone_repo
-
-    # Verify the presence of the kubernetes directory
-    log "Checking if the Kubernetes directory exists after cloning..."
-    if [ -d "$KUBERNETES_DIR" ]; then
-        log "Kubernetes directory found: $KUBERNETES_DIR"
-    else
-        log "Kubernetes directory not found: $KUBERNETES_DIR"
-        log "Contents of the project directory:"
-        ls -R karchi
-        exit 1
-    fi
-
-    # Change to the project directory
-    cd $PROJECT_DIR || exit
 
     # Create necessary directories for Airflow
     create_airflow_dirs

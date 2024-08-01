@@ -1,9 +1,10 @@
 #!/bin/bash
+
 # Set variables
 REPO_URL="https://github.com/AliAzimiD/karchi.git"
-PROJECT_DIR="data-pipeline-project"
-KUBERNETES_DIR="$PROJECT_DIR/kubernetes"
+PROJECT_DIR="karchi/data-pipeline-project"
 SUPSERSET_DIR="$PROJECT_DIR/superset"
+KUBERNETES_DIR="$PROJECT_DIR/kubernetes"
 
 # Function to log messages
 log() {

@@ -3,7 +3,7 @@
 # Set variables
 REPO_URL="https://github.com/AliAzimiD/karchi.git"
 PROJECT_DIR="karchi/data-pipeline-project"
-SUPSERSET_DIR="$PROJECT_DIR/superset"
+SUPSERSET_DIR="superset"
 KUBERNETES_DIR="$PROJECT_DIR/kubernetes"
 
 # Function to log messages
@@ -31,22 +31,22 @@ command_exists() {
 
 # Function to clone the repository
 clone_repo() {
-    if [ -d "karchi" ]; then
-        read -p "Directory karchi already exists. Do you want to delete it and re-clone the repository? (y/n): " choice
+    if [ -d "$PROJECT_DIR" ]; then
+        read -p "Directory $PROJECT_DIR already exists. Do you want to delete it and re-clone the repository? (y/n): " choice
         if [ "$choice" = "y" ]; then
-            log "Deleting existing directory karchi..."
-            rm -rf karchi
+            log "Deleting existing directory $PROJECT_DIR..."
+            rm -rf $PROJECT_DIR
             log "Cloning the repository..."
             git clone $REPO_URL
         else
-            log "Using existing directory karchi."
+            log "Using existing directory $PROJECT_DIR."
         fi
     else
         log "Cloning the repository..."
         git clone $REPO_URL || { log "Failed to clone repository"; exit 1; }
     fi
 
-    # Move into the project directory
+    # Initialize and update submodules if any
     cd karchi || exit 1
     git submodule init
     git submodule update
@@ -70,11 +70,9 @@ apply_k8s_configs() {
         if [ -d "$KUBERNETES_DIR" ]; then
             log "Kubernetes directory found. Applying configurations."
             cd $KUBERNETES_DIR || { log "Kubernetes directory not found: $KUBERNETES_DIR"; exit 1; }
-            kubectl apply -f pv.yaml || { log "Failed to apply pv.yaml"; exit 1; }
-            kubectl apply -f pvc.yaml || { log "Failed to apply pvc.yaml"; exit 1; }
-            kubectl apply -f kafka-zookeeper-deployment.yaml || { log "Failed to apply kafka-zookeeper-deployment.yaml"; exit 1; }
-            kubectl apply -f spark-deployment.yaml || { log "Failed to apply spark-deployment.yaml"; exit 1; }
-            kubectl apply -f airflow-deployment.yaml || { log "Failed to apply airflow-deployment.yaml"; exit 1; }
+            kubectl apply -f pv.yaml --validate=false || { log "Failed to apply pv.yaml"; exit 1; }
+            kubectl apply -f pvc.yaml --validate=false || { log "Failed to apply pvc.yaml"; exit 1; }
+            kubectl apply -f airflow-deployment.yaml --validate=false || { log "Failed to apply airflow-deployment.yaml"; exit 1; }
         else
             log "Kubernetes directory not found after cloning: $KUBERNETES_DIR"
             log "Checking the contents of the project directory for debugging:"
@@ -159,6 +157,9 @@ main() {
 
     # Clone the repository
     clone_repo
+
+    # Change to the project directory
+    cd karchi/data-pipeline-project || exit
 
     # Create necessary directories for Airflow
     create_airflow_dirs

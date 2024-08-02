@@ -111,7 +111,7 @@ services:
       - postgres
     command: >
       sh -c '
-      superset fab create-admin --username \$${SUPERSET_USERNAME} --firstname Superset --lastname Admin --email \$${SUPERSET_EMAIL} --password \$${SUPERSET_PASSWORD} &&
+      superset fab create-admin --username $${SUPERSET_USERNAME} --firstname Superset --lastname Admin --email $${SUPERSET_EMAIL} --password $${SUPERSET_PASSWORD} &&
       superset db upgrade &&
       superset init &&
       superset run -p 8088 --with-threads --reload --debugger

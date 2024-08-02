@@ -89,53 +89,8 @@ apply_k8s_configs() {
 # Function to set up Superset using Docker Compose
 setup_superset() {
     log "Setting up Superset using Docker Compose..."
-    mkdir -p $PROJECT_DIR/$SUPSERSET_DIR
-    cat <<EOF > $PROJECT_DIR/$SUPSERSET_DIR/docker-compose.yml
-version: "3.8"
-services:
-  superset:
-    image: apache/superset:latest
-    container_name: superset
-    environment:
-      SUPERSET_LOAD_EXAMPLES: "no"
-      SUPERSET_USERNAME: "admin"
-      SUPERSET_PASSWORD: "admin"
-      SUPERSET_EMAIL: "admin@superset.com"
-      SUPERSET_WEBSERVER_PORT: "8088"
-    volumes:
-      - ./superset_home:/app/superset_home
-    ports:
-      - "8088:8088"
-    restart: always
-    depends_on:
-      - postgres
-    command: >
-      sh -c '
-      superset fab create-admin --username $${SUPERSET_USERNAME} --firstname Superset --lastname Admin --email $${SUPERSET_EMAIL} --password $${SUPERSET_PASSWORD} &&
-      superset db upgrade &&
-      superset init &&
-      superset run -p 8088 --with-threads --reload --debugger
-      '
-
-  postgres:
-    image: postgres:13
-    container_name: superset_db
-    environment:
-      POSTGRES_DB: superset
-      POSTGRES_USER: superset
-      POSTGRES_PASSWORD: superset
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    restart: always
-
-  redis:
-    image: redis:latest
-    container_name: superset_cache
-    ports:
-      - "6379:6379"
-    restart: always
+    
+    
 EOF
     cd $PROJECT_DIR/$SUPSERSET_DIR
     docker-compose up -d || { log "Failed to set up Superset"; exit 1; }

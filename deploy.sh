@@ -90,8 +90,6 @@ apply_k8s_configs() {
 setup_superset() {
     log "Setting up Superset using Docker Compose..."
     
-    
-EOF
     cd $PROJECT_DIR/$SUPSERSET_DIR
     docker-compose up -d || { log "Failed to set up Superset"; exit 1; }
 }

@@ -2,20 +2,13 @@
 
 # Set variables
 REPO_URL="https://github.com/AliAzimiD/karchi.git"
-PROJECT_DIR="$PWD/karchi/data-pipeline-project"
+PROJECT_DIR="karchi/data-pipeline-project"
 SUPSERSET_DIR="$PROJECT_DIR/superset"
 KUBERNETES_DIR="$PROJECT_DIR/kubernetes"
-MAX_RETRIES=5
-RETRY_DELAY=5
 
 # Function to log messages
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
-}
-
-# Function to log the current directory
-log_current_directory() {
-    log "Current directory: $(pwd)"
 }
 
 # Function to install kubectl
@@ -38,7 +31,6 @@ command_exists() {
 
 # Function to clone the repository
 clone_repo() {
-    log_current_directory
     if [ -d "karchi" ]; then
         read -p "Directory karchi already exists. Do you want to delete it and re-clone the repository? (y/n): " choice
         if [ "$choice" = "y" ]; then
@@ -56,7 +48,6 @@ clone_repo() {
 
     # Move into the project directory
     cd karchi || exit 1
-    log_current_directory
     git submodule init
     git submodule update
     cd ..
@@ -64,7 +55,6 @@ clone_repo() {
 
 # Function to create necessary directories for Airflow
 create_airflow_dirs() {
-    log_current_directory
     log "Creating necessary directories for Airflow..."
     mkdir -p $PROJECT_DIR/airflow/dags
     mkdir -p $PROJECT_DIR/airflow/logs
@@ -73,16 +63,13 @@ create_airflow_dirs() {
 
 # Function to apply Kubernetes configurations
 apply_k8s_configs() {
-    log_current_directory
     log "Applying Kubernetes configurations..."
     if command_exists kubectl; then
         log "Listing contents of the cloned repository before applying Kubernetes configurations:"
-        ls -R $PROJECT_DIR || { log "Failed to list contents of the project directory"; exit 1; }
-        
+        ls -R $PROJECT_DIR
         if [ -d "$KUBERNETES_DIR" ]; then
             log "Kubernetes directory found. Applying configurations."
             cd $KUBERNETES_DIR || { log "Kubernetes directory not found: $KUBERNETES_DIR"; exit 1; }
-            log_current_directory
             kubectl apply -f pv.yaml || { log "Failed to apply pv.yaml"; exit 1; }
             kubectl apply -f pvc.yaml || { log "Failed to apply pvc.yaml"; exit 1; }
             kubectl apply -f kafka-zookeeper-deployment.yaml || { log "Failed to apply kafka-zookeeper-deployment.yaml"; exit 1; }
@@ -101,28 +88,15 @@ apply_k8s_configs() {
 
 # Function to set up Superset using Docker Compose
 setup_superset() {
-    log_current_directory
     log "Setting up Superset using Docker Compose..."
-
-    # Retry mechanism for checking directory existence
-    for ((i=1; i<=MAX_RETRIES; i++)); do
-        if [ -d "$SUPSERSET_DIR" ]; then
-            log "Superset directory found: $SUPSERSET_DIR"
-            break
-        else
-            log "Superset directory not found. Retrying in $RETRY_DELAY seconds ($i/$MAX_RETRIES)..."
-            sleep $RETRY_DELAY
-        fi
-
-        if [ $i -eq $MAX_RETRIES ]; then
-            log "Superset directory not found after $MAX_RETRIES retries. Exiting."
-            exit 1
-        fi
-    done
     
     # Navigate to the Superset directory
-    cd $SUPSERSET_DIR || { log "Failed to navigate to Superset directory: $SUPSERSET_DIR"; exit 1; }
-    log_current_directory
+    cd $SUPSERSET_DIR || { log "Superset directory not found: $SUPSERSET_DIR"; exit 1; }
+    
+    # Generate a secure SECRET_KEY and save it to superset_config.py
+    log "Generating SECRET_KEY and updating superset_config.py..."
+    SECRET_KEY=$(openssl rand -base64 42)
+    echo "SECRET_KEY = \"$SECRET_KEY\"" > superset_config.py
     
     # Run Docker Compose
     docker compose up -d || { log "Failed to set up Superset"; exit 1; }
@@ -130,8 +104,6 @@ setup_superset() {
 
 # Main script execution
 main() {
-    log_current_directory
-
     # Install kubectl if not already installed
     if ! command_exists kubectl; then
         install_kubectl
@@ -140,7 +112,7 @@ main() {
     fi
 
     # Install Docker Compose if not already installed
-    if ! command_exists docker-compose; then
+    if (! command_exists docker-compose); then
         install_docker_compose
     else
         log "Docker Compose is already installed"

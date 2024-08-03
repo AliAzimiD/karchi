@@ -8,7 +8,7 @@ services:
       - SUPERSET_USERNAME=admin
       - SUPERSET_PASSWORD=admin
       - SUPERSET_EMAIL=admin@superset.com
-      - SUPERSET_WEBSERVER_PORT=8088
+      - SUPERSET_WEBSERVER_PORT=0.0.0.0:8088
     volumes:
       - ./superset_home:/app/superset_home
       - ./superset_config.py:/app/pythonpath/superset_config.py
@@ -22,7 +22,7 @@ services:
       superset fab create-admin --username $${SUPERSET_USERNAME} --firstname Superset --lastname Admin --email $${SUPERSET_EMAIL} --password $${SUPERSET_PASSWORD} &&
       superset db upgrade &&
       superset init &&
-      superset run -p 8088 --with-threads --reload --debugger
+      superset run -h 0.0.0.0 -p 8088 --with-threads --reload --debugger
       '
 
 

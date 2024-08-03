@@ -112,7 +112,6 @@ setup_superset() {
     # Navigate to the Superset directory
     cd $SUPSERSET_DIR || { log "Failed to navigate to Superset directory: $SUPSERSET_DIR"; exit 1; }
     
-  
     # Run Docker Compose
     docker-compose up -d --build --force-recreate || { log "Failed to set up Superset"; exit 1; }
 }

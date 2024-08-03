@@ -89,12 +89,13 @@ apply_k8s_configs() {
 # Function to set up Superset using Docker Compose
 setup_superset() {
     log "Setting up Superset using Docker Compose..."
-    cd $SUPSERSET_DIR
-    docker-compose up -d || { log "Failed to set up Superset"; exit 1; }
-    log "Setting up Superset using Docker Compose..."
-    mkdir -p $PROJECT_DIR/$SUPSERSET_DIR
-    cat <<EOF > $PROJECT_DIR/$SUPSERSET_DIR/docker-compose.yml
     
+    # Ensure the Superset directory exists
+    mkdir -p $SUPSERSET_DIR
+
+    # Create the docker-compose.yml file if it doesn't exist
+    if [ ! -f "$SUPSERSET_DIR/docker-compose.yml" ]; then
+        cat <<EOF > $SUPSERSET_DIR/docker-compose.yml
 version: "3.8"
 services:
   superset:
@@ -115,7 +116,7 @@ services:
       - postgres
     command: >
       sh -c '
-      superset fab create-admin --username $${SUPERSET_USERNAME} --firstname Superset --lastname Admin --email $${SUPERSET_EMAIL} --password $${SUPERSET_PASSWORD} &&
+      superset fab create-admin --username \$${SUPERSET_USERNAME} --firstname Superset --lastname Admin --email \$${SUPERSET_EMAIL} --password \$${SUPERSET_PASSWORD} &&
       superset db upgrade &&
       superset init &&
       superset run -p 8088 --with-threads --reload --debugger
@@ -140,10 +141,11 @@ services:
     ports:
       - "6379:6379"
     restart: always
-
-
 EOF
-    cd $PROJECT_DIR/$SUPSERSET_DIR
+    fi
+
+    # Navigate to the Superset directory and run Docker Compose
+    cd $SUPSERSET_DIR || { log "Superset directory not found: $SUPSERSET_DIR"; exit 1; }
     docker-compose up -d || { log "Failed to set up Superset"; exit 1; }
 }
 
@@ -157,7 +159,7 @@ main() {
     fi
 
     # Install Docker Compose if not already installed
-    if ! command_exists docker-compose; then
+    if (! command_exists docker-compose); then
         install_docker_compose
     else
         log "Docker Compose is already installed"

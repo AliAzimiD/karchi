@@ -90,13 +90,20 @@ apply_k8s_configs() {
 setup_superset() {
     log "Setting up Superset using Docker Compose..."
     
+    # Verify Superset directory exists
+    if [ ! -d "$SUPSERSET_DIR" ]; then
+        log "Superset directory not found: $SUPSERSET_DIR"
+        log "Checking contents of the project directory for debugging:"
+        ls -la $PROJECT_DIR
+        exit 1
+    fi
+    
     # Navigate to the Superset directory
-    cd $SUPSERSET_DIR || { log "Superset directory not found: $SUPSERSET_DIR"; exit 1; }
+    cd $SUPSERSET_DIR || { log "Failed to navigate to Superset directory: $SUPSERSET_DIR"; exit 1; }
     
     # Run Docker Compose
     docker compose up -d || { log "Failed to set up Superset"; exit 1; }
 }
-
 
 
 # Main script execution
@@ -109,7 +116,7 @@ main() {
     fi
 
     # Install Docker Compose if not already installed
-    if (! command_exists docker-compose); then
+    if ! command_exists docker-compose; then
         install_docker_compose
     else
         log "Docker Compose is already installed"

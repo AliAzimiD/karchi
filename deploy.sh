@@ -2,9 +2,11 @@
 
 # Set variables
 REPO_URL="https://github.com/AliAzimiD/karchi.git"
-PROJECT_DIR="karchi/data-pipeline-project"
+PROJECT_DIR="$PWD/karchi/data-pipeline-project"
 SUPSERSET_DIR="$PROJECT_DIR/superset"
 KUBERNETES_DIR="$PROJECT_DIR/kubernetes"
+MAX_RETRIES=5
+RETRY_DELAY=5
 
 # Function to log messages
 log() {
@@ -66,7 +68,8 @@ apply_k8s_configs() {
     log "Applying Kubernetes configurations..."
     if command_exists kubectl; then
         log "Listing contents of the cloned repository before applying Kubernetes configurations:"
-        ls -R $PROJECT_DIR
+        ls -R $PROJECT_DIR || { log "Failed to list contents of the project directory"; exit 1; }
+        
         if [ -d "$KUBERNETES_DIR" ]; then
             log "Kubernetes directory found. Applying configurations."
             cd $KUBERNETES_DIR || { log "Kubernetes directory not found: $KUBERNETES_DIR"; exit 1; }
@@ -89,14 +92,25 @@ apply_k8s_configs() {
 # Function to set up Superset using Docker Compose
 setup_superset() {
     log "Setting up Superset using Docker Compose..."
+
+    # Retry mechanism for checking directory existence
+    for ((i=1; i<=MAX_RETRIES; i++)); do
+        if [ -d "$SUPSERSET_DIR" ]; then
+            log "Superset directory found: $SUPSERSET_DIR"
+            break
+        else
+            log "Superset directory not found. Retrying in $RETRY_DELAY seconds ($i/$MAX_RETRIES)..."
+            sleep $RETRY_DELAY
+        fi
+
+        if [ $i -eq $MAX_RETRIES ]; then
+            log "Superset directory not found after $MAX_RETRIES retries. Exiting."
+            exit 1
+        fi
+    done
     
     # Navigate to the Superset directory
-    cd $SUPSERSET_DIR || { log "Superset directory not found: $SUPSERSET_DIR"; exit 1; }
-    
-    # Generate a secure SECRET_KEY and save it to superset_config.py
-    log "Generating SECRET_KEY and updating superset_config.py..."
-    SECRET_KEY=$(openssl rand -base64 42)
-    echo "SECRET_KEY = \"$SECRET_KEY\"" > superset_config.py
+    cd $SUPSERSET_DIR || { log "Failed to navigate to Superset directory: $SUPSERSET_DIR"; exit 1; }
     
     # Run Docker Compose
     docker compose up -d || { log "Failed to set up Superset"; exit 1; }
@@ -112,7 +126,7 @@ main() {
     fi
 
     # Install Docker Compose if not already installed
-    if (! command_exists docker-compose); then
+    if ! command_exists docker-compose; then
         install_docker_compose
     else
         log "Docker Compose is already installed"

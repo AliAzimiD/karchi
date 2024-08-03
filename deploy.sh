@@ -112,13 +112,9 @@ setup_superset() {
     # Navigate to the Superset directory
     cd $SUPSERSET_DIR || { log "Failed to navigate to Superset directory: $SUPSERSET_DIR"; exit 1; }
     
-    # Generate a secure SECRET_KEY and save it to superset_config.py
-    log "Generating SECRET_KEY and updating superset_config.py..."
-    SECRET_KEY=$(openssl rand -base64 42)
-    echo "SECRET_KEY = \"$SECRET_KEY\"" > superset_config.py
-    
+  
     # Run Docker Compose
-    docker compose up -d || { log "Failed to set up Superset"; exit 1; }
+    docker-compose up -d --build --force-recreate || { log "Failed to set up Superset"; exit 1; }
 }
 
 # Main script execution

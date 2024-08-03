@@ -1,3 +1,4 @@
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,6 +23,16 @@ spec:
               value: "n"
             - name: EXECUTOR
               value: LocalExecutor
+            - name: POSTGRES_HOST
+              value: "your-postgres-host"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_USER
+              value: "your-username"
+            - name: POSTGRES_PASSWORD
+              value: "your-password"
+            - name: POSTGRES_DB
+              value: "your-dbname"
           volumeMounts:
             - name: airflow-dags
               mountPath: /usr/local/airflow/dags

@@ -1,3 +1,4 @@
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -30,6 +31,8 @@ spec:
           env:
             - name: SPARK_MODE
               value: master
+            - name: SPARK_MASTER_PORT
+              value: "7077"
 ---
 apiVersion: v1
 kind: Service
@@ -64,5 +67,4 @@ spec:
             - name: SPARK_MODE
               value: worker
             - name: SPARK_MASTER_URL
-              value: spark://spark-master:7077
-
+              value: "spark-master:7077"

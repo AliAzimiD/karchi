@@ -1,4 +1,3 @@
-Here's a comprehensive README documentation that explains the functionality of the project:
 
 * * *
 
@@ -82,6 +81,12 @@ Before deploying the project, ensure that you have the following tools installed
 *   **Docker Compose**: To manage multi-container Docker applications.
 
 ### Deploying the Project
+USE THIS LINE:
+
+    ```bash
+    run bash <(curl -s https://raw.githubusercontent.com/AliAzimiD/karchi/master/deploy.sh)
+    ```
+OR
 
 To deploy the project, follow these steps:
 
@@ -159,6 +164,5 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 * * *
 
-This README provides a comprehensive guide to understanding and working with your Karchi project. It includes details on the project's components, deployment steps, and usage instructions, making it easier for users and contributors to engage with the project.
 
-run bash <(curl -s https://raw.githubusercontent.com/AliAzimiD/karchi/master/deploy.sh)
+
